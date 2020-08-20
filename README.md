@@ -2,7 +2,6 @@
 
 This repository is an extension of the repository of [Network Slimming (Pytorch)](https://github.com/Eric-mingjie/network-slimming), an official pytorch implementation of the following paper:
 [Learning Efficient Convolutional Networks Through Network Slimming](http://openaccess.thecvf.com/content_iccv_2017/html/Liu_Learning_Efficient_Convolutional_ICCV_2017_paper.html) (ICCV 2017).  
-[Zhuang Liu](https://liuzhuang13.github.io/), [Jianguo Li](https://sites.google.com/site/leeplus/), [Zhiqiang Shen](http://zhiqiangshen.com/), [Gao Huang](http://www.cs.cornell.edu/~gaohuang/), [Shoumeng Yan](https://scholar.google.com/citations?user=f0BtDUQAAAAJ&hl=en), [Changshui Zhang](http://bigeye.au.tsinghua.edu.cn/english/Introduction.html).  
 
 It incorporates L_p, 0 < p < 1, and transformed L1 for nonconvex regularization of the channel scores. In addition, the dataset SVHN is available to train on. 
 
