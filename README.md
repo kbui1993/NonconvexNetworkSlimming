@@ -14,6 +14,15 @@ Citation:
     month = {Oct},
     year = {2017}
 }
+
+@inproceedings{bui2020nonconvex,
+  title={Nonconvex Regularization for Network Slimming: Compressing CNNs Even More},
+  author={Bui, Kevin and Park, Fredrick and Zhang, Shuai and Qi, Yingyong and Xin, Jack},
+  booktitle={International Symposium on Visual Computing},
+  pages={39--53},
+  year={2020},
+  organization={Springer}
+}
 ```
 
 
