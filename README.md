@@ -2,7 +2,6 @@
 
 This repository is an extension of the repository of [Network Slimming (Pytorch)](https://github.com/Eric-mingjie/network-slimming), an official pytorch implementation of the following paper:
 [Learning Efficient Convolutional Networks Through Network Slimming](http://openaccess.thecvf.com/content_iccv_2017/html/Liu_Learning_Efficient_Convolutional_ICCV_2017_paper.html) (ICCV 2017).  
-[Zhuang Liu](https://liuzhuang13.github.io/), [Jianguo Li](https://sites.google.com/site/leeplus/), [Zhiqiang Shen](http://zhiqiangshen.com/), [Gao Huang](http://www.cs.cornell.edu/~gaohuang/), [Shoumeng Yan](https://scholar.google.com/citations?user=f0BtDUQAAAAJ&hl=en), [Changshui Zhang](http://bigeye.au.tsinghua.edu.cn/english/Introduction.html).  
 
 It incorporates L_p, 0 < p < 1, and transformed L1 for nonconvex regularization of the channel scores. In addition, the dataset SVHN is available to train on. 
 
@@ -15,14 +14,20 @@ Citation:
     month = {Oct},
     year = {2017}
 }
+
+@inproceedings{bui2020nonconvex,
+  title={Nonconvex Regularization for Network Slimming: Compressing CNNs Even More},
+  author={Bui, Kevin and Park, Fredrick and Zhang, Shuai and Qi, Yingyong and Xin, Jack},
+  booktitle={International Symposium on Visual Computing},
+  pages={39--53},
+  year={2020},
+  organization={Springer}
+}
 ```
 
 
 ## Dependencies
 torch v0.3.1, torchvision v0.2.0
-
-## Channel Selection Layer
-We introduce `channel selection` layer to help the  pruning of ResNet and DenseNet. This layer is easy to implement. It stores a parameter `indexes` which is initialized to an all-1 vector. During pruning, it will set some places to 0 which correspond to the pruned channels.
 
 ## Baseline 
 
