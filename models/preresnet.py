@@ -81,7 +81,6 @@ class resnet(nn.Module):
             self.fc = nn.Linear(cfg[-1], 10)
         elif dataset == 'cifar100':
             self.fc = nn.Linear(cfg[-1], 100)
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels

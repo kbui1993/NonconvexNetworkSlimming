@@ -32,6 +32,7 @@ class vgg(nn.Module):
             num_classes = 10
         elif dataset == 'cifar100':
             num_classes = 100
+
         self.classifier = nn.Linear(cfg[-1], num_classes)
         if init_weights:
             self._initialize_weights()

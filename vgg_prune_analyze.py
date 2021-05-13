@@ -7,6 +7,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 from torchvision import datasets, transforms
 from models import *
+from compute_flops import print_model_param_flops
 
 def appendDFToCSV_void(df, csvFilePath, sep=","):
     import os
@@ -33,8 +34,6 @@ parser.add_argument('--percent', type=float, default=0.5,
                     help='scale sparse rate (default: 0.5)')
 parser.add_argument('--model', default='', type=str, metavar='PATH',
                     help='path to the model (default: none)')
-parser.add_argument('--name', default='L0WideResNet', type=str,
-                    help='name of experiment')
 parser.add_argument('--save', default='', type=str, metavar='PATH',
                     help='path to save pruned model (default: none)')
 args = parser.parse_args()
@@ -44,6 +43,7 @@ if not os.path.exists(args.save):
     os.makedirs(args.save)
 
 model = vgg(dataset=args.dataset, depth=args.depth)
+total_flops = print_model_param_flops(model, input_res=32)
 if args.cuda:
     model.cuda()
 
@@ -139,8 +139,6 @@ acc = test(model)
 # Make real prune
 print(cfg)
 newmodel = vgg(dataset=args.dataset, cfg=cfg)
-if args.cuda:
-    newmodel.cuda()
 
 num_parameters = sum([param.nelement() for param in newmodel.parameters()])
 total_parameters = sum([param.nelement() for param in model.parameters()])
@@ -183,17 +181,20 @@ for [m0, m1] in zip(model.modules(), newmodel.modules()):
             idx0 = np.resize(idx0, (1,))
         m1.weight.data = m0.weight.data[:, idx0].clone()
         m1.bias.data = m0.bias.data.clone()
-args.name = args.name+'pruned.pth.tar'
-torch.save({'cfg': cfg, 'state_dict': newmodel.state_dict()}, os.path.join(args.save, args.name))
 
-print(newmodel)
 model = newmodel
 pruned_acc = test(model)
+model.cpu()
+flops = print_model_param_flops(model, input_res=32)
+print(flops)
 
-data = [args.model, 'VGG', args.depth, args.dataset, num_parameters, 1-num_parameters/total_parameters, checkpoint['best_prec1'].item(), pruned_acc.item()]
+num_parameters = sum([param.nelement() for param in newmodel.parameters()])
+total_parameters = sum([param.nelement() for param in model.parameters()])
+
+data = [args.model, 'VGG', args.depth, args.dataset, num_parameters, args.percent, 1-num_parameters/total_parameters, 1-flops/total_flops, checkpoint['best_prec1'].item(), pruned_acc.item()]
 info_df = pd.DataFrame(data)
 info_df = info_df.transpose()
-info_df.columns =  ['Model', 'Architecture', 'Depth', 'Dataset', 'Parameters', 'Pruned Ratio', 'Pre-Pruned Accuracy', 'Pruned Accuracy']
+info_df.columns =  ['Model', 'Architecture', 'Depth', 'Dataset', 'Parameters', 'Channel Pruning Percentage', 'Pruned Ratio', 'FLOPS Percentage Pruned', 'Pre-Pruned Accuracy', 'Pruned Accuracy']
 
 appendDFToCSV_void(info_df, os.path.join(args.save, 'pruned_record.csv'))
 

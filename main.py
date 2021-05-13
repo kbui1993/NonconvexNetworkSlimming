@@ -95,17 +95,15 @@ if args.dataset == 'cifar10':
                        ])),
         batch_size=args.test_batch_size, shuffle=True, **kwargs)
 elif args.dataset == 'SVHN':
-    train_loader = torch.utils.data.DataLoader(
-        datasets.SVHN('./data.SVHN', split = "train", download = True, transform =transforms.Compose([
-                    transforms.ToTensor(),
-                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                ])),
-        batch_size=args.batch_size, shuffle=True, **kwargs)
+    train_set = datasets.SVHN('./data.SVHN', split = "train", download = True, transform =transforms.Compose([transforms.ToTensor(),
+            transforms.Normalize((0.4376821, 0.4437697, 0.47280442), (0.19803012, 0.20101562, 0.19703614))]))
+    extra_set = datasets.SVHN('./data.SVHN', split = "extra", download = True, transform =transforms.Compose([transforms.ToTensor(),
+            transforms.Normalize((0.4376821, 0.4437697, 0.47280442), (0.19803012, 0.20101562, 0.19703614))]))
+    train_loader = torch.utils.data.DataLoader(torch.utils.data.ConcatDataset([train_set, extra_set]),
+        batch_size =args.test_batch_size, shuffle = True, **kwargs)
     test_loader = torch.utils.data.DataLoader(
-        datasets.SVHN('./data.SVHN', split = "test", download = True, transform = transforms.Compose([
-                    transforms.ToTensor(),
-                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                ])),
+        datasets.SVHN('./data.SVHN', split = "test", download = True, transform =transforms.Compose([transforms.ToTensor(),
+            transforms.Normalize((0.4376821, 0.4437697, 0.47280442), (0.19803012, 0.20101562, 0.19703614))])),
         batch_size =args.test_batch_size, shuffle = True, **kwargs)
 elif args.dataset == 'cifar100':
     train_loader = torch.utils.data.DataLoader(
@@ -124,6 +122,7 @@ elif args.dataset == 'cifar100':
                            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
                        ])),
         batch_size=args.test_batch_size, shuffle=True, **kwargs)
+
 
 if args.refine:
     checkpoint = torch.load(args.refine)
@@ -162,10 +161,34 @@ def updateTL1BN(a):
         if isinstance(m, nn.BatchNorm2d):
             m.weight.grad.data.add_(args.s*a*(a+1)*torch.sign(m.weight.data)/(a+m.weight.data.abs())**2)  #TL1
 
-def updateLp(a):
+def updateLpBN(a):
     for m in model.modules():
         if isinstance(m, nn.BatchNorm2d):
             m.weight.grad.data.add_(args.s*(a*torch.sign(m.weight.data)/(m.weight.data.abs()**(1-a))))
+
+def updateMCPBN(a):
+    for m in model.modules():
+        if isinstance(m, nn.BatchNorm2d):
+            u = m.weight.data.clone()
+            shrink_value = torch.sign(m.weight.data)*(args.s - m.weight.data.abs()/a)
+            u[m.weight.data.abs()<=a*args.s] = shrink_value[m.weight.data.abs()<=a*args.s]
+            u[m.weight.data.abs()>a*args.s] = 0
+
+            m.weight.grad.data.add_(u)
+
+
+def updateSCADBN(a):
+    for m in model.modules():
+        if isinstance(m, nn.BatchNorm2d):
+            u = m.weight.data.clone()
+            shrink_value1 = args.s*torch.sign(m.weight.data)
+            shrink_value2 = (a*args.s*torch.sign(m.weight.data)-m.weight.data)/(a-1)
+
+            u[m.weight.data.abs()<=args.s] = shrink_value1[m.weight.data.abs()<=args.s]
+            u[(m.weight.data.abs()>args.s) & (m.weight.data.abs()<=args.s*a)] = shrink_value2[(m.weight.data.abs()>args.s) & (m.weight.data.abs()<=args.s*a)]
+            u[m.weight.data.abs()>args.s*a] = 0
+
+            m.weight.grad.data.add_(u)
 
 def train(epoch):
     model.train()
@@ -183,14 +206,12 @@ def train(epoch):
                 updateBN()
             elif args.reg == 'TL1':
                 updateTL1BN(args.a)
-            elif args.reg == 'L1L2':
-                updateL1L2BN(args.a)
             elif args.reg == 'SCAD':
                 updateSCADBN(args.a)
-            elif args.reg == 'L12':
-                updateL1_2()
             elif args.reg == 'Lp':
-                updateLp(args.a)
+                updateLpBN(args.a)
+            elif args.reg == 'MCP':
+                updateMCPBN(args.a)
 
         optimizer.step()
         if batch_idx % args.log_interval == 0:
