@@ -24,24 +24,16 @@ Citation:
   organization={Springer}
 }
 
-@ARTICLE{bui2021nonconvex,
-
-  author={Bui, Kevin and Park, Fredrick and Zhang, Shuai and Qi, Yingyong and Xin, Jack},
-
-  journal={IEEE Access}, 
-
-  title={Improving Network Slimming with Nonconvex Regularization}, 
-
-  year={2021},
-
-  volume={},
-
-  number={},
-
-  pages={1-1},
-
-  doi={10.1109/ACCESS.2021.3105366}}
-
+@article{bui2021nonconvex,
+    author={Bui, Kevin and Park, Fredrick and Zhang, Shuai and Qi, Yingyong and Xin, Jack},
+    journal={IEEE Access}, 
+    title={Improving Network Slimming with Nonconvex Regularization}, 
+    year={2021},
+    volume={},
+    number={},
+    pages={1-1},
+    doi={10.1109/ACCESS.2021.3105366}
+}
 ```
 
 
