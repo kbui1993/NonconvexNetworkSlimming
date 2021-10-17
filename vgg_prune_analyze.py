@@ -188,9 +188,6 @@ model.cpu()
 flops = print_model_param_flops(model, input_res=32)
 print(flops)
 
-num_parameters = sum([param.nelement() for param in newmodel.parameters()])
-total_parameters = sum([param.nelement() for param in model.parameters()])
-
 data = [args.model, 'VGG', args.depth, args.dataset, num_parameters, args.percent, 1-num_parameters/total_parameters, 1-flops/total_flops, checkpoint['best_prec1'].item(), pruned_acc.item()]
 info_df = pd.DataFrame(data)
 info_df = info_df.transpose()
