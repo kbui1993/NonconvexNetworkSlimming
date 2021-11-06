@@ -111,7 +111,7 @@ def test(model):
         test_loader = torch.utils.data.DataLoader(
             datasets.CIFAR100('./data.cifar100', train=False, transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.4376821, 0.4437697, 0.47280442), (0.19803012, 0.20101562, 0.19703614))])),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])),
             batch_size=args.test_batch_size, shuffle=True, **kwargs)
     elif args.dataset == 'SVHN':
         test_loader = torch.utils.data.DataLoader(
