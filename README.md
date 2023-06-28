@@ -50,7 +50,7 @@ python main.py --dataset cifar10 --arch vgg --depth 19
 
 ## Train with Sparsity
 
-The `reg` argument specifies which regularization to use: `L1`, `TL1`, or `Lp`. The `a` argument specifies the nonconvex parameter. In particular, for Lp regularization, `a` has to have values strictly between 0 and 1; for TL1, `a` has to have values greater than 0.
+The `reg` argument specifies which regularization to use: `L1`, `TL1`, `Lp`, `MCP`, or `SCAD`. The `a` argument specifies the nonconvex parameter. In particular, for Lp regularization, `a` has to have values strictly between 0 and 1; for TL1, `a` has to have values greater than 0.
 ```shell
 python main.py -sr --s 0.0001 --dataset cifar10 --arch vgg --depth 19 --reg L1
 python main.py -sr --s 0.0001 --dataset cifar10 --arch vgg --depth 19 --reg Lp --a 0.5
